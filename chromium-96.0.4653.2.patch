@@ -1,0 +1,31 @@
+--- a/extensions/renderer/messaging_util.h
++++ b/extensions/renderer/messaging_util.h
+@@ -7,6 +7,7 @@
+ 
+ #include <memory>
+ #include <string>
++#include <vector>
+ 
+ #include "v8/include/v8-forward.h"
+ 
+--- a/extensions/renderer/resource_bundle_source_map.h
++++ b/extensions/renderer/resource_bundle_source_map.h
+@@ -6,6 +6,7 @@
+ #define EXTENSIONS_RENDERER_RESOURCE_BUNDLE_SOURCE_MAP_H_
+ 
+ #include <map>
++#include <memory>
+ #include <string>
+ 
+ #include "base/macros.h"
+--- a/third_party/blink/renderer/core/style/applied_text_decoration.h
++++ b/third_party/blink/renderer/core/style/applied_text_decoration.h
+@@ -5,6 +5,8 @@
+ #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_APPLIED_TEXT_DECORATION_H_
+ #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_APPLIED_TEXT_DECORATION_H_
+ 
++#include <memory>
++
+ #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+ #include "third_party/blink/renderer/core/style/text_decoration_thickness.h"
+ #include "third_party/blink/renderer/platform/geometry/length.h"

@@ -10,13 +10,9 @@
 # Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
 
 pkgname=ungoogled-chromium
-pkgver=94.0.4606.61
+pkgver=96.0.4653.2
 pkgrel=1
 _launcher_ver=8
-_gcc_patchset=3
-# ungoogled chromium variables
-_uc_usr=Eloston
-_uc_ver=94.0.4606.61-1
 pkgdesc="A lightweight approach to removing Google web service dependency"
 arch=('x86_64')
 url="https://github.com/Eloston/ungoogled-chromium"
@@ -24,7 +20,7 @@ license=('BSD')
 depends=('gtk3' 'nss' 'alsa-lib' 'xdg-utils' 'libxss' 'libcups' 'libgcrypt'
          'ttf-liberation' 'systemd' 'dbus' 'libpulse' 'pciutils' 'libva'
          'desktop-file-utils' 'hicolor-icon-theme')
-makedepends=('python' 'gn' 'ninja' 'clang' 'lld' 'gperf' 'nodejs' 'pipewire'
+makedepends=('python' 'gn' 'ninja' 'clang' 'llvm' 'gperf' 'nodejs' 'pipewire'
              'java-runtime-headless')
 optdepends=('pipewire: WebRTC desktop sharing under Wayland'
             'kdialog: support for native dialogs in Plasma'
@@ -33,9 +29,9 @@ optdepends=('pipewire: WebRTC desktop sharing under Wayland'
 provides=('chromium')
 conflicts=('chromium')
 source=(https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$pkgver.tar.xz
-        $pkgname-$_uc_ver.tar.gz::https://github.com/$_uc_usr/ungoogled-chromium/archive/$_uc_ver.tar.gz
+        $pkgname::git://github.com/usertam/ungoogled-chromium.git
         https://github.com/foutrelis/chromium-launcher/archive/v$_launcher_ver/chromium-launcher-$_launcher_ver.tar.gz
-        https://github.com/stha09/chromium-patches/releases/download/chromium-${pkgver%%.*}-patchset-$_gcc_patchset/chromium-${pkgver%%.*}-patchset-$_gcc_patchset.tar.xz
+        https://github.com/stha09/chromium-patches/releases/download/chromium-96-patchset-1/chromium-96-patchset-1.tar.xz
         chromium-drirc-disable-10bpc-color-configs.conf
         sql-VirtualCursor-standard-layout.patch
         wayland-egl.patch
@@ -45,11 +41,12 @@ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chrom
         chromium-94-ffmpeg-roll.patch
         unexpire-accelerated-video-decode-flag.patch
         add-a-TODO-about-a-missing-pnacl-flag.patch
-        use-ffile-compilation-dir.patch)
-sha256sums=('6446db535c02c461c7e5c8d294a0300db03abba791f97f0c70bc52255aedb9bf'
-            '1931ff2120f2615d05597dc9f2429f3a185dd499964b3ca83e7012f629426646'
+        use-ffile-compilation-dir.patch
+        chromium-96.0.4653.2.patch)
+sha256sums=('741a806af94c62971038fc587310d0db1c6ec1aa149de8ec7f7bb6bd9dd028ed'
+            'SKIP'
             '213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a'
-            '22692bddaf2761c6ddf9ff0bc4722972bca4d4c5b2fd3e5dbdac7eb60d914320'
+            'ae590a7759f23343ac838a7e65e8deb6ad2203a8ee8c97a910d41a107f46e8d1'
             'babda4f5c1179825797496898d77334ac067149cac03d797ab27ac69671a7feb'
             '23d6b14530acb66762c5d8b895c100203a824549e0d9aa815958dfd2513e6a7a'
             '34d08ea93cb4762cb33c7cffe931358008af32265fc720f2762f0179c3973574'
@@ -59,7 +56,8 @@ sha256sums=('6446db535c02c461c7e5c8d294a0300db03abba791f97f0c70bc52255aedb9bf'
             '56acb6e743d2ab1ed9f3eb01700ade02521769978d03ac43226dec94659b3ace'
             '2a97b26c3d6821b15ef4ef1369905c6fa3e9c8da4877eb9af4361452a425290b'
             'd53da216538f2e741a6e048ed103964a91a98e9a3c10c27fdfa34d4692fdc455'
-            '921010cd8fab5f30be76c68b68c9b39fac9e21f4c4133bb709879592bbdf606e')
+            '921010cd8fab5f30be76c68b68c9b39fac9e21f4c4133bb709879592bbdf606e'
+            '56159ac68c7ee12f623c273e8acf828fa9c5de8885022c07e08f90af15f854d5')
 
 # Possible replacements are listed in build/linux/unbundle/replace_gn_files.py
 # Keys are the names in the above script; values are the dependencies in Arch
@@ -68,7 +66,7 @@ declare -gA _system_libs=(
   [flac]=flac
   [fontconfig]=fontconfig
   [freetype]=freetype2
-  [harfbuzz-ng]=harfbuzz
+  #[harfbuzz-ng]=harfbuzz
   [icu]=icu
   [libdrm]=
   [libjpeg]=libjpeg
@@ -121,22 +119,22 @@ prepare() {
   # Revert transition to -fsanitize-ignorelist (needs newer clang)
   patch -Rp1 -i ../replace-blacklist-with-ignorelist.patch
 
-  # Revert addition of -ffile-compilation-dir= (needs newer clang)
-  patch -Rp1 -i ../add-a-TODO-about-a-missing-pnacl-flag.patch
-  patch -Rp1 -i ../use-ffile-compilation-dir.patch
-
   # Fixes building with GCC 11  https://crbug.com/1189788
   patch -Np1 -i ../sql-VirtualCursor-standard-layout.patch
 
   # Fixes for building with libstdc++ instead of libc++
-  patch -Np1 -i ../patches/chromium-90-ruy-include.patch
-  patch -Np1 -i ../patches/chromium-94-CustomSpaces-include.patch
+  patch -Np1 -i ../patches/chromium-78-protobuf-RepeatedPtrField-export.patch
+  patch -Np1 -i ../patches/chromium-95-compiler.patch
+  patch -Np1 -i ../patches/chromium-95-libyuv-aarch64.patch
 
   # Wayland/EGL regression (crbug #1071528 #1071550)
   patch -Np1 -i ../wayland-egl.patch
 
+  # Fixes for canary build
+  patch -Np1 -i ../chromium-96.0.4653.2.patch
+
   # Ungoogled Chromium changes
-  _ungoogled_repo="$srcdir/$pkgname-$_uc_ver"
+  _ungoogled_repo="$srcdir/$pkgname"
   _utils="${_ungoogled_repo}/utils"
   msg2 'Pruning binaries'
   python "$_utils/prune_binaries.py" ./ "$_ungoogled_repo/pruning.list"
@@ -180,8 +178,8 @@ build() {
 
   export CC=clang
   export CXX=clang++
-  export AR=ar
-  export NM=nm
+  export AR=llvm-ar
+  export NM=llvm-nm
 
   local _flags=(
     'custom_toolchain="//build/toolchain/linux/unbundle:default"'
@@ -209,7 +207,7 @@ build() {
   fi
 
   # Append ungoogled chromium flags to _flags array
-  _ungoogled_repo="$srcdir/$pkgname-$_uc_ver"
+  _ungoogled_repo="$srcdir/$pkgname"
   readarray -t -O ${#_flags[@]} _flags < "${_ungoogled_repo}/flags.gn"
 
   # See https://github.com/ungoogled-software/ungoogled-chromium-archlinux/issues/123

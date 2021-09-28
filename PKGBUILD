@@ -10,7 +10,7 @@
 # Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
 
 pkgname=ungoogled-chromium
-pkgver=96.0.4653.2
+pkgver=96.0.4656.0
 pkgrel=1
 _launcher_ver=8
 pkgdesc="A lightweight approach to removing Google web service dependency"
@@ -42,8 +42,8 @@ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chrom
         unexpire-accelerated-video-decode-flag.patch
         add-a-TODO-about-a-missing-pnacl-flag.patch
         use-ffile-compilation-dir.patch
-        chromium-96.0.4653.2.patch)
-sha256sums=('741a806af94c62971038fc587310d0db1c6ec1aa149de8ec7f7bb6bd9dd028ed'
+        chromium-96.0.4656.0.patch)
+sha256sums=('9ea6b751e3532a6c5fe96205e4e540d234e7d35849b8c67adab58db30c177d46'
             'SKIP'
             '213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a'
             'ae590a7759f23343ac838a7e65e8deb6ad2203a8ee8c97a910d41a107f46e8d1'
@@ -57,7 +57,7 @@ sha256sums=('741a806af94c62971038fc587310d0db1c6ec1aa149de8ec7f7bb6bd9dd028ed'
             '2a97b26c3d6821b15ef4ef1369905c6fa3e9c8da4877eb9af4361452a425290b'
             'd53da216538f2e741a6e048ed103964a91a98e9a3c10c27fdfa34d4692fdc455'
             '921010cd8fab5f30be76c68b68c9b39fac9e21f4c4133bb709879592bbdf606e'
-            '56159ac68c7ee12f623c273e8acf828fa9c5de8885022c07e08f90af15f854d5')
+            'f7490c97b74699db61e543db5330dd6e1d0c5b2e357963820466f41b542a6a5b')
 
 # Possible replacements are listed in build/linux/unbundle/replace_gn_files.py
 # Keys are the names in the above script; values are the dependencies in Arch
@@ -131,7 +131,7 @@ prepare() {
   patch -Np1 -i ../wayland-egl.patch
 
   # Fixes for canary build
-  patch -Np1 -i ../chromium-96.0.4653.2.patch
+  patch -Np1 -i ../chromium-96.0.4656.0.patch
 
   # Ungoogled Chromium changes
   _ungoogled_repo="$srcdir/$pkgname"

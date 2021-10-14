@@ -11,7 +11,7 @@
 
 pkgname=ungoogled-chromium
 pkgver=97.0.4665.0
-pkgrel=2
+pkgrel=1
 _launcher_ver=8
 pkgdesc="A lightweight approach to removing Google web service dependency"
 arch=('x86_64')
@@ -42,7 +42,6 @@ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chrom
         unexpire-accelerated-video-decode-flag.patch
         add-a-TODO-about-a-missing-pnacl-flag.patch
         use-ffile-compilation-dir.patch
-        pipewire-do-not-typecheck-the-portal-session_handle.patch
         chromium-96-patchset-2.patch
         chromium-97.0.4665.0.patch)
 sha256sums=('083092952a23bb033ce8b605011e01bfa67e467aaa39cdc52d482bd16147db7c'
@@ -59,7 +58,6 @@ sha256sums=('083092952a23bb033ce8b605011e01bfa67e467aaa39cdc52d482bd16147db7c'
             '2a97b26c3d6821b15ef4ef1369905c6fa3e9c8da4877eb9af4361452a425290b'
             'd53da216538f2e741a6e048ed103964a91a98e9a3c10c27fdfa34d4692fdc455'
             '921010cd8fab5f30be76c68b68c9b39fac9e21f4c4133bb709879592bbdf606e'
-            '1889d890ff512a8b82a0f88972e78c78131177d8034750ff53577dfad99b3e3e'
             '476e870a258a5b1f5c5d91058fcf239b8be63505bbaea6a3ad0ea99c45a08227'
             'e7543f278ff7c476d41a9404d296e831f669e4e21176fa3f20009175b3118436')
 
@@ -126,9 +124,6 @@ prepare() {
 
   # Revert transition to -fsanitize-ignorelist (needs newer clang)
   patch -Rp1 -i ../replace-blacklist-with-ignorelist.patch
-
-  # Fix desktop sharing via Pipewire with xdg-desktop-portal 1.10
-  patch -Np1 -d third_party/webrtc <../pipewire-do-not-typecheck-the-portal-session_handle.patch
 
   # Fixes building with GCC 11  https://crbug.com/1189788
   patch -Np1 -i ../sql-VirtualCursor-standard-layout.patch

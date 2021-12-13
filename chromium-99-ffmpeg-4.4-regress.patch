@@ -1,0 +1,35 @@
+--- a/media/filters/ffmpeg_demuxer.cc
++++ b/media/filters/ffmpeg_demuxer.cc
+@@ -107,12 +107,12 @@
+ 
+   // Next try to use the first DTS value, for codecs where we know PTS == DTS
+   // (excludes all H26x codecs). The start time must be returned in PTS.
+-  if (av_stream_get_first_dts(stream) != kNoFFmpegTimestamp &&
++  if (stream->first_dts != kNoFFmpegTimestamp &&
+       stream->codecpar->codec_id != AV_CODEC_ID_HEVC &&
+       stream->codecpar->codec_id != AV_CODEC_ID_H264 &&
+       stream->codecpar->codec_id != AV_CODEC_ID_MPEG4) {
+     const base::TimeDelta first_pts =
+-        ConvertFromTimeBase(stream->time_base, av_stream_get_first_dts(stream));
++        ConvertFromTimeBase(stream->time_base, stream->first_dts);
+     if (first_pts < start_time)
+       start_time = first_pts;
+   }
+@@ -1593,7 +1593,7 @@
+   for (const auto& stream : streams_) {
+     if (!stream || stream->IsEnabled() != enabled)
+       continue;
+-    if (av_stream_get_first_dts(stream->av_stream()) == kInvalidPTSMarker)
++    if (stream->av_stream()->first_dts == kInvalidPTSMarker)
+       continue;
+     if (!lowest_start_time_stream ||
+         stream->start_time() < lowest_start_time_stream->start_time()) {
+@@ -1614,7 +1614,7 @@
+     if (stream->type() != DemuxerStream::VIDEO)
+       continue;
+ 
+-    if (av_stream_get_first_dts(stream->av_stream()) == kInvalidPTSMarker)
++    if (stream->av_stream()->first_dts == kInvalidPTSMarker)
+       continue;
+ 
+     if (!stream->IsEnabled())

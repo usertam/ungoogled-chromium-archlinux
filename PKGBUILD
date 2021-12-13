@@ -10,7 +10,7 @@
 # Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
 
 pkgname=ungoogled-chromium
-pkgver=97.0.4680.0
+pkgver=99.0.4759.0
 pkgrel=1
 _launcher_ver=8
 pkgdesc="A lightweight approach to removing Google web service dependency"
@@ -31,33 +31,33 @@ conflicts=('chromium')
 source=(https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$pkgver.tar.xz
         $pkgname::git://github.com/usertam/ungoogled-chromium.git
         https://github.com/foutrelis/chromium-launcher/archive/v$_launcher_ver/chromium-launcher-$_launcher_ver.tar.gz
-        https://github.com/stha09/chromium-patches/releases/download/chromium-97-patchset-1/chromium-97-patchset-1.tar.xz
+        https://github.com/stha09/chromium-patches/releases/download/chromium-98-patchset-3/chromium-98-patchset-3.tar.xz
         chromium-drirc-disable-10bpc-color-configs.conf
         sql-VirtualCursor-standard-layout.patch
         wayland-egl.patch
         use-oauth2-client-switches-as-default.patch
         replace-blacklist-with-ignorelist.patch
         chromium-93-ffmpeg-4.4.patch
-        chromium-94-ffmpeg-roll.patch
         unexpire-accelerated-video-decode-flag.patch
         add-a-TODO-about-a-missing-pnacl-flag.patch
         use-ffile-compilation-dir.patch
-        chromium-97.0.4680.0.patch)
-sha256sums=('2fe8be77d7dcaaf02db8b5e0e1237dc4651b36e7a69ece7cd3fda7dd9d39ad7d'
+        chromium-99-ffmpeg-4.4-regress.patch
+        chromium-99.0.4759.0.patch)
+sha256sums=('7faf05ae650a2a2046e5ff1c895bf9a077f3b498b41b7c5ea67a8967a7e56897'
             'SKIP'
             '213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a'
-            '0c05fbd1b141d3682340c07264a9d9efa57b0fd1616409689c7931f8fef59e70'
+            'e956af629bd6a6be34d87005356d39fd65a3db7f0993cb5d54e9c86ed9fc7c33'
             'babda4f5c1179825797496898d77334ac067149cac03d797ab27ac69671a7feb'
             '23d6b14530acb66762c5d8b895c100203a824549e0d9aa815958dfd2513e6a7a'
             '34d08ea93cb4762cb33c7cffe931358008af32265fc720f2762f0179c3973574'
             'e393174d7695d0bafed69e868c5fbfecf07aa6969f3b64596d0bae8b067e1711'
             'd3344ba39b8c6ed202334ba7f441c70d81ddf8cdb15af1aa8c16e9a3a75fbb35'
             '1a9e074f417f8ffd78bcd6874d8e2e74a239905bf662f76a7755fa40dc476b57'
-            '56acb6e743d2ab1ed9f3eb01700ade02521769978d03ac43226dec94659b3ace'
             '2a97b26c3d6821b15ef4ef1369905c6fa3e9c8da4877eb9af4361452a425290b'
             'd53da216538f2e741a6e048ed103964a91a98e9a3c10c27fdfa34d4692fdc455'
             '921010cd8fab5f30be76c68b68c9b39fac9e21f4c4133bb709879592bbdf606e'
-            'ade89a2d0da598cd6f9d86d9999e37f1aa8497c2bc50fe43e9e39db511a364da')
+            '2ab9bc615b2142a3060fca68c728704bf70fb4dbd0fc40064f66f4af13d68841'
+            'd9ba7dd8c0148d8233a436d41dd91e09330035445bc380f9b288af8337595b50')
 
 # Possible replacements are listed in build/linux/unbundle/replace_gn_files.py
 # Keys are the names in the above script; values are the dependencies in Arch
@@ -106,12 +106,11 @@ prepare() {
   # Fix build with older ffmpeg
   patch -Np1 -i ../chromium-93-ffmpeg-4.4.patch
 
-  # Revert change to custom function av_stream_get_first_dts; will need to
-  # switch to bundled ffmpeg when we're no longer using ffmpeg 4.4 in Arch
-  # Upstream commit that made first_dts internal causing Chromium to add a
-  # custom function: https://github.com/FFmpeg/FFmpeg/commit/591b88e6787c4
+  # Revert usage of custom function av_stream_get_first_dts
+  # To be replaced when that first_dts is declared private
+  # https://github.com/FFmpeg/FFmpeg/commit/591b88e6787c4
   # https://crbug.com/1251779
-  patch -Rp1 -i ../chromium-94-ffmpeg-roll.patch
+  patch -Np1 -i ../chromium-99-ffmpeg-4.4-regress.patch
 
   # https://crbug.com/1207478
   patch -Np0 -i ../unexpire-accelerated-video-decode-flag.patch
@@ -124,14 +123,14 @@ prepare() {
 
   # Fixes for building with libstdc++ instead of libc++
   patch -Np1 -i ../patches/chromium-78-protobuf-RepeatedPtrField-export.patch
-  patch -Np1 -i ../patches/chromium-95-libyuv-aarch64.patch
-  patch -Np1 -i ../patches/chromium-96-compiler.patch
+  patch -Np1 -i ../patches/chromium-98-compiler.patch
+  patch -Np1 -i ../patches/chromium-98-MiraclePtr-gcc-ice.patch
 
   # Wayland/EGL regression (crbug #1071528 #1071550)
   patch -Np1 -i ../wayland-egl.patch
 
   # Fixes for canary build
-  patch -Np1 -i ../chromium-97.0.4680.0.patch
+  patch -Np1 -i ../chromium-99.0.4759.0.patch
 
   # Ungoogled Chromium changes
   _ungoogled_repo="$srcdir/$pkgname"

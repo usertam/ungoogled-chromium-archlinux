@@ -10,7 +10,7 @@
 # Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
 
 pkgname=ungoogled-chromium
-pkgver=99.0.4759.0
+pkgver=99.0.4765.0
 pkgrel=1
 _launcher_ver=8
 pkgdesc="A lightweight approach to removing Google web service dependency"
@@ -42,8 +42,9 @@ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chrom
         add-a-TODO-about-a-missing-pnacl-flag.patch
         use-ffile-compilation-dir.patch
         chromium-99-ffmpeg-4.4-regress.patch
-        chromium-99.0.4759.0.patch)
-sha256sums=('7faf05ae650a2a2046e5ff1c895bf9a077f3b498b41b7c5ea67a8967a7e56897'
+        chromium-99.0.4765.0.patch
+        webauthn-split-caBLEv2-device-handling.patch)
+sha256sums=('7dadd975b1598b0e6b4a85ea8497a55f911c1b195cb3b95374928e3bd73e6c79'
             'SKIP'
             '213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a'
             'e956af629bd6a6be34d87005356d39fd65a3db7f0993cb5d54e9c86ed9fc7c33'
@@ -57,7 +58,8 @@ sha256sums=('7faf05ae650a2a2046e5ff1c895bf9a077f3b498b41b7c5ea67a8967a7e56897'
             'd53da216538f2e741a6e048ed103964a91a98e9a3c10c27fdfa34d4692fdc455'
             '921010cd8fab5f30be76c68b68c9b39fac9e21f4c4133bb709879592bbdf606e'
             '2ab9bc615b2142a3060fca68c728704bf70fb4dbd0fc40064f66f4af13d68841'
-            'd9ba7dd8c0148d8233a436d41dd91e09330035445bc380f9b288af8337595b50')
+            '5b27da61fbbd7acdcfbbfaaa13704becbbecbc4784d6a502998efb5fdfc34802'
+            '552be7ac16211ab230c03b8c103dda30f384bae0203b0c0645bcd918c484c646')
 
 # Possible replacements are listed in build/linux/unbundle/replace_gn_files.py
 # Keys are the names in the above script; values are the dependencies in Arch
@@ -130,7 +132,8 @@ prepare() {
   patch -Np1 -i ../wayland-egl.patch
 
   # Fixes for canary build
-  patch -Np1 -i ../chromium-99.0.4759.0.patch
+  patch -Np1 -i ../chromium-99.0.4765.0.patch
+  patch -Rp1 -i ../webauthn-split-caBLEv2-device-handling.patch
 
   # Ungoogled Chromium changes
   _ungoogled_repo="$srcdir/$pkgname"

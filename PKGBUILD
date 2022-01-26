@@ -10,13 +10,9 @@
 # Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
 
 pkgname=ungoogled-chromium
-pkgver=97.0.4692.99
+pkgver=100.0.4845.0
 pkgrel=2
 _launcher_ver=8
-_gcc_patchset=4
-# ungoogled chromium variables
-_uc_usr=Eloston
-_uc_ver=97.0.4692.99-1
 pkgdesc="A lightweight approach to removing Google web service dependency"
 arch=('x86_64')
 url="https://github.com/Eloston/ungoogled-chromium"
@@ -34,9 +30,9 @@ provides=('chromium')
 conflicts=('chromium')
 options=('!lto') # Chromium adds its own flags for ThinLTO
 source=(https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$pkgver.tar.xz
-        $pkgname-$_uc_ver.tar.gz::https://github.com/$_uc_usr/ungoogled-chromium/archive/$_uc_ver.tar.gz
+        $pkgname::git://github.com/usertam/ungoogled-chromium.git
         https://github.com/foutrelis/chromium-launcher/archive/v$_launcher_ver/chromium-launcher-$_launcher_ver.tar.gz
-        https://github.com/stha09/chromium-patches/releases/download/chromium-${pkgver%%.*}-patchset-$_gcc_patchset/chromium-${pkgver%%.*}-patchset-$_gcc_patchset.tar.xz
+        https://github.com/stha09/chromium-patches/releases/download/chromium-99-patchset-2/chromium-99-patchset-2.tar.xz
         chromium-drirc-disable-10bpc-color-configs.conf
         sql-VirtualCursor-standard-layout.patch
         wayland-egl.patch
@@ -45,10 +41,10 @@ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chrom
         unexpire-accelerated-video-decode-flag.patch
         unbundle-ffmpeg-av_stream_get_first_dts.patch
         wayland-fix-binding-to-wrong-version.patch)
-sha256sums=('c91bae205705b367f2cfc1f72ce1ee99b2ceb5edfc584e15c60a6ab5ff01ecba'
-            'e01148a7e94bfd5ee288b5c5cf7df869aaae545cf48951c8d1f47264792cbf44'
+sha256sums=('a68d31f77a6b7700a5161d82f5932c2822f85f7ae68ad51be3d3cf689a3fe2b0'
+            'SKIP'
             '213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a'
-            '7af5c0a55a20c0fb496b2f4448d89203a83bb1914754d864460e55e68731ef0b'
+            'e7f41d78c16c181bdd39c8d001eebe2bd190f8170b4a0bdfa02c90be65d1c4f9'
             'babda4f5c1179825797496898d77334ac067149cac03d797ab27ac69671a7feb'
             '23d6b14530acb66762c5d8b895c100203a824549e0d9aa815958dfd2513e6a7a'
             '34d08ea93cb4762cb33c7cffe931358008af32265fc720f2762f0179c3973574'
@@ -129,7 +125,7 @@ prepare() {
   patch -Np1 -i ../wayland-egl.patch
 
   # Ungoogled Chromium changes
-  _ungoogled_repo="$srcdir/$pkgname-$_uc_ver"
+  _ungoogled_repo="$srcdir/$pkgname"
   _utils="${_ungoogled_repo}/utils"
   msg2 'Pruning binaries'
   python "$_utils/prune_binaries.py" ./ "$_ungoogled_repo/pruning.list"
@@ -202,7 +198,7 @@ build() {
   fi
 
   # Append ungoogled chromium flags to _flags array
-  _ungoogled_repo="$srcdir/$pkgname-$_uc_ver"
+  _ungoogled_repo="$srcdir/$pkgname"
   readarray -t -O ${#_flags[@]} _flags < "${_ungoogled_repo}/flags.gn"
 
   # See https://github.com/ungoogled-software/ungoogled-chromium-archlinux/issues/123
